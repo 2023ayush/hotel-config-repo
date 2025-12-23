@@ -1,1 +1,28 @@
+server:
+  port: 5555
+
+spring:
+  application:
+    name: api-gateway
+
+  redis:
+    host: localhost
+    port: 6379
+
+  cloud:
+    gateway:
+      routes:
+        # your dev routes
+        - id: auth-service-app
+          uri: lb://AUTHSERVICEAPP
+          predicates:
+            - Path=/auth/**
+          filters:
+            - RewritePath=/auth/(?<segment>.*), /${segment}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
 
