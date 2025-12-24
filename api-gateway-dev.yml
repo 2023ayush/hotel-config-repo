@@ -12,17 +12,29 @@ spring:
   cloud:
     gateway:
       routes:
-        # your dev routes
         - id: auth-service-app
           uri: lb://AUTHSERVICEAPP
           predicates:
             - Path=/auth/**
           filters:
             - RewritePath=/auth/(?<segment>.*), /${segment}
+            - name: CircuitBreaker
+              args:
+                name: authServiceCircuit
+                fallbackUri: forward:/fallback/auth
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authServiceCircuit:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
 
 management:
   endpoints:
     web:
       exposure:
         include: prometheus,health,info
-
