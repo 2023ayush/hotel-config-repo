@@ -22,3 +22,27 @@ eureka:
       defaultZone: ${EUREKA_SERVER}
   instance:
     prefer-ip-address: true
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      propertyService:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+  retry:
+    instances:
+      propertyService:
+        maxAttempts: 3
+        waitDuration: 2s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
