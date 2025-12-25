@@ -24,9 +24,10 @@ spring:
             - Path=/auth/**
           filters:
             - RewritePath=/auth/(?<segment>.*), /${segment}
-            - CircuitBreaker
-              name: authServiceCircuit
-              fallbackUri: forward:/fallback/auth
+            - name: CircuitBreaker
+              args:
+                name: authServiceCircuit
+                fallbackUri: forward:/fallback/auth
 
         # ================= BOOKING SERVICE =================
         - id: booking-service
