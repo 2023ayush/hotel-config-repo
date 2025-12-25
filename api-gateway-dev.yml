@@ -34,18 +34,24 @@ spring:
           uri: lb://BOOKINGSERVICE
           predicates:
             - Path=/booking/**
+          filters:
+            - RewritePath=/booking/(?<segment>.*), /${segment}
 
         # ================= PROPERTY SERVICE =================
         - id: property-service
           uri: lb://PROPERTYSERVICE
           predicates:
             - Path=/property/**
+          filters:
+            - RewritePath=/property/(?<segment>.*), /${segment}
 
         # ================= ADMIN / MICRO SERVICE =================
         - id: admin-service
           uri: lb://ADMINSERVICE
           predicates:
             - Path=/api/v1/admin/**
+          filters:
+            - RewritePath=/api/v1/admin/(?<segment>.*), /${segment}
 
 # ================= RESILIENCE4J =================
 resilience4j:
