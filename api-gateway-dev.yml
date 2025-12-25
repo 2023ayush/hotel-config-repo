@@ -11,23 +11,42 @@ spring:
 
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
       routes:
-        - id: auth-service-app
+        # ================= AUTH SERVICE =================
+        - id: auth-service
           uri: lb://AUTHSERVICEAPP
           predicates:
             - Path=/auth/**
           filters:
-            # Corrected RewritePath syntax
-            - name: RewritePath
-              args:
-                regexp: "/auth/(?<segment>.*)"
-                replacement: "/${segment}"
-            # CircuitBreaker filter
-            - name: CircuitBreaker
-              args:
-                name: authServiceCircuit
-                fallbackUri: forward:/fallback/auth
+            - RewritePath=/auth/(?<segment>.*), /${segment}
+            - CircuitBreaker
+              name: authServiceCircuit
+              fallbackUri: forward:/fallback/auth
 
+        # ================= BOOKING SERVICE =================
+        - id: booking-service
+          uri: lb://BOOKINGSERVICE
+          predicates:
+            - Path=/booking/**
+
+        # ================= PROPERTY SERVICE =================
+        - id: property-service
+          uri: lb://PROPERTYSERVICE
+          predicates:
+            - Path=/property/**
+
+        # ================= ADMIN / MICRO SERVICE =================
+        - id: admin-service
+          uri: lb://ADMINSERVICE
+          predicates:
+            - Path=/api/v1/admin/**
+
+# ================= RESILIENCE4J =================
 resilience4j:
   circuitbreaker:
     instances:
@@ -37,12 +56,14 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 10s
 
+# ================= ACTUATOR =================
 management:
   endpoints:
     web:
       exposure:
         include: prometheus,health,info
 
+# ================= LOGGING =================
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
