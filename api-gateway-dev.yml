@@ -43,9 +43,6 @@ spring:
             - Path=/property/**
           filters:
             - RewritePath=/property/(?<segment>.*), /${segment}
-            - AddRequestHeader=X-User-Role, #{request.headers['X-User-Role']}
-            - AddRequestHeader=X-User-Name, #{request.headers['X-User-Name']}
-            - AddRequestHeader=Authorization, #{request.headers['Authorization']}
 
         # ================= ADMIN / MICRO SERVICE =================
         - id: admin-service
