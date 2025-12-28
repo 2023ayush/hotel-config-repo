@@ -3,9 +3,9 @@ spring:
     name: authserviceapp
 
   datasource:
-    url: ${AUTH_DB_URL}
-    username: ${AUTH_DB_USERNAME}
-    password: ${AUTH_DB_PASSWORD}
+    url: jdbc:mysql://database-2.cjgeiy4eefq2.ap-south-1.rds.amazonaws.com:3306/hmsauthdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: auth_user
+    password: Auth@123
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
