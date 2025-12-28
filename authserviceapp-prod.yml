@@ -1,1 +1,38 @@
+server:
+  port: 9094   # Auth service port
+
+spring:
+  application:
+    name: AUTH-SERVICE   # Must match the API Gateway route uri lb://AUTH-SERVICE
+
+  datasource:
+    url: jdbc:mysql://database-prod-host:3306/hmsauthdb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: auth_user
+    password: Auth@123
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authServiceCircuit:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus,health,info
+
+logging:
+  level:
+    org.springframework: INFO
 
