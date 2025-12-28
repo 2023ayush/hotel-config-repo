@@ -11,18 +11,65 @@ spring:
 
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true   # automatically discover services via Eureka
       routes:
-        # same routes as dev
+        # ================= AUTH SERVICE =================
         - id: auth-service-app
-          uri: lb://AUTHSERVICEAPP
+          uri: lb://AUTH-SERVICE
           predicates:
             - Path=/auth/**
           filters:
             - RewritePath=/auth/(?<segment>.*), /${segment}
+
+        # ================= BOOKING SERVICE =================
+        - id: booking-service
+          uri: lb://BOOKING-SERVICE
+          predicates:
+            - Path=/booking/**
+          filters:
+            - RewritePath=/booking/(?<segment>.*), /${segment}
+
+        # ================= PROPERTY SERVICE =================
+        - id: property-service
+          uri: lb://PROPERTY-SERVICE
+          predicates:
+            - Path=/property/**
+          filters:
+            - RewritePath=/property/(?<segment>.*), /${segment}
+
+        # ================= ADMIN SERVICE =================
+        - id: admin-service
+          uri: lb://ADMIN-SERVICE
+          predicates:
+            - Path=/api/v1/admin/**
+          filters:
+            - RewritePath=/api/v1/admin/(?<segment>.*), /${segment}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://service-registry:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authServiceCircuit:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
 
 management:
   endpoints:
     web:
       exposure:
         include: prometheus,health,info
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO
 
